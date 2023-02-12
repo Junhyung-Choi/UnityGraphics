@@ -48,7 +48,7 @@ public class BezierPatch : MonoBehaviour
         
         boundingVolumeTree = new BVH(ControlPointsMatrix);
         
-        
+        boundingVolumeTree.Construct();
         
     }
 
