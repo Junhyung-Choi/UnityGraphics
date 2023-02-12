@@ -8,6 +8,7 @@ public class BezierPatch : MonoBehaviour
     public List<DVector> ControlPointsArray;
     public DVector[,] ControlPointsMatrix;
 
+    public GameObject LeafNodeChecker;
     public BVH boundingVolumeTree;
     
     public int[,] bernsteinPolynomial = {
@@ -58,6 +59,17 @@ public class BezierPatch : MonoBehaviour
         
     }
 
+    public void CheckCollisionNodeCheck()
+    {
+        boundingVolumeTree.ShowCollisionLeafNode(LeafNodeChecker);
+    }
+
+    public void DebugLog()
+    {
+        boundingVolumeTree.LogNodes();
+    }
+
+
     void SetControlPointsMatrix()
     {
         for(int i = 0; i < row; i++)
@@ -74,8 +86,7 @@ public class BezierPatch : MonoBehaviour
             for(int j = 0; j < 1024; j+= 4)
             {
                 DVector dot = CalculateBezierPatch(i,j);
-                Debug.DrawLine(dot, dot * (float)1.1, Color.red, 100);
-
+                Debug.DrawLine(dot, dot * (float)1.01, Color.red, 100);
             }
     }
 
