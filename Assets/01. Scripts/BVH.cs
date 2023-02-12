@@ -26,10 +26,34 @@ public class BVH
         DVector[,] leftChildMatrix = new DVector[row,col];
         DVector[,] rightChildMatrix = new DVector[row,col];
 
-        
 
 
         return (leftChildMatrix, rightChildMatrix);
+    }
+
+    public List<DVector> Subdivision(List<DVector> col)
+    {
+        List<DVector> triangle = new List<DVector>();
+        foreach(var vec in col) triangle.Add(vec);
+
+        int length = triangle.Count;
+        int boundary = 0;
+        while(true)
+        {
+            if(length == 1) break;
+            else
+            {
+                for(int i = 0; i < length; i++)
+                {
+                    DVector tmp = (triangle[boundary + i] * 0.5) + (triangle[boundary + i + 1] * 0.5);
+                    triangle.Add(tmp);
+                }
+                boundary += length;
+                length -= 1;
+            }
+        }
+
+        return triangle; 
     }
 
 }
