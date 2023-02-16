@@ -9,7 +9,10 @@ public class BezierPatch : MonoBehaviour
     public DVector[,] ControlPointsMatrix;
 
     public GameObject LeafNodeChecker;
+    public GameObject MinDistanceChecker;
     public BVH boundingVolumeTree;
+
+    public bool isShowMinDistance = false;
     
     public int[,] bernsteinPolynomial = {
         {   1,   0,   0,   0,   0,   0,   0,   0,   0,   0},
@@ -56,17 +59,25 @@ public class BezierPatch : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if(Input.GetKeyUp(KeyCode.S)) isShowMinDistance = !isShowMinDistance;
+        if(isShowMinDistance) ShowMinDistance();
     }
 
     public void CheckCollisionNodeCheck()
     {
-        boundingVolumeTree.ShowCollisionLeafNode(LeafNodeChecker);
+        boundingVolumeTree.ShowCollisionLeafNode(LeafNodeChecker, "leaf");
     }
 
     public void DebugLog()
     {
         boundingVolumeTree.LogNodes();
+    }
+
+    public void ShowMinDistance()
+    {
+        Debug.Log(MinDistanceChecker);
+        Debug.Log(boundingVolumeTree);
+        boundingVolumeTree.ShowMinDistance(MinDistanceChecker);
     }
 
 

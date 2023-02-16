@@ -188,4 +188,13 @@ public class TreeNode
         TreeNode.row = row;
         TreeNode.col = col;
     }
+
+    public Vector3 GetCenter()
+    {
+        Vector3 center = new Vector3();
+        center.x = (float)(x.min + x.max) / 2;
+        center.y = (float)(y.min + y.max) / 2;
+        center.z = (float)(z.min + z.max) / 2;
+        return center;
+    }
 }

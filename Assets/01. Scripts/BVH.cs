@@ -8,7 +8,7 @@ public class BVH
     GameObject dot;
 
     public TreeNode root;
-    public int MAX_DEPTH = 16;
+    public int MAX_DEPTH = 17;
     public DVector[,] controlPointsMatrix;
 
     public class QueueNode
@@ -67,32 +67,49 @@ public class BVH
         }
     }
 
-    public void ShowCollisionLeafNode(GameObject cube)
+    public void ShowCollisionLeafNode(GameObject cube, string mode)
     {
         Queue<TreeNode> queue = new Queue<TreeNode>();
         float minX = cube.transform.position.x;
         float maxX = minX + cube.transform.localScale.x;
+        float lenX = cube.transform.localScale.x;
         float minY = cube.transform.position.y;
         float maxY = minY + cube.transform.localScale.y;
+        float lenY = cube.transform.localScale.y;
         float minZ = cube.transform.position.z;
         float maxZ = minZ + cube.transform.localScale.z;
+        float lenZ = cube.transform.localScale.z;
 
         queue.Enqueue(root);
 
         TreeNode node;
+        // bool condition = false;
+
         while(queue.Count != 0)
         {
             node = queue.Dequeue();
 
             if(
                 node.x.min <= maxX && node.x.max >= minX &&
-                node.y.min <= minY && node.y.max >= maxY &&
-                node.z.min <= minZ && node.z.max >= maxZ
+                node.y.min <= maxY && node.y.max >= minY &&
+                node.z.min <= maxZ && node.z.max >= minZ
             )
             {
-                DebugBoxDrawer.instance.DrawDebugBox(node.x,node.y,node.z);
-                queue.Enqueue(node.leftChild);
-                queue.Enqueue(node.rightChild);
+                if(mode == "leaf")
+                {
+                    if(node.depth == MAX_DEPTH)
+                        DebugBoxDrawer.instance.DrawDebugBox(node.x,node.y,node.z);
+                }
+                else
+                {
+                    DebugBoxDrawer.instance.DrawDebugBox(node.x,node.y,node.z);
+                }
+
+                if(node.depth != MAX_DEPTH)
+                {
+                    queue.Enqueue(node.leftChild);
+                    queue.Enqueue(node.rightChild);
+                }
             }
         }
         
@@ -114,4 +131,41 @@ public class BVH
             }
         }
     }
+
+    public void ShowMinDistance(GameObject obj)
+    {
+        float minDistance = 123456789f;
+        TreeNode resultNode = null;
+
+        Queue<TreeNode> queue = new Queue<TreeNode>();
+        queue.Enqueue(root);
+
+        while(queue.Count != 0)
+        {
+            TreeNode node = queue.Dequeue();
+            if(node.depth < MAX_DEPTH)
+            {
+                Vector3 leftVec = node.leftChild.GetCenter();
+                Vector3 rightVec = node.rightChild.GetCenter();
+
+                float leftDistance = Vector3.Distance(leftVec,obj.transform.position);
+                float rightDistance = Vector3.Distance(rightVec,obj.transform.position);
+
+                if(leftDistance <= rightDistance) queue.Enqueue(node.leftChild);
+                else queue.Enqueue(node.rightChild);
+            }
+            else if (node.depth == MAX_DEPTH)
+            {
+                // 이 부분 수정 필요
+                if(minDistance >= Vector3.Distance(node.GetCenter(),obj.transform.position))
+                {
+                    minDistance = Vector3.Distance(node.GetCenter(),obj.transform.position);
+                    resultNode = node; 
+                }
+            }
+        }
+
+        Debug.DrawLine(resultNode.corners[0,0],obj.transform.position,Color.yellow,1);
+    }
+
 }
