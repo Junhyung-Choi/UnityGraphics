@@ -145,11 +145,9 @@ public class BVH
             TreeNode node = queue.Dequeue();
             if(node.depth < MAX_DEPTH)
             {
-                Vector3 leftVec = node.leftChild.GetCenter();
-                Vector3 rightVec = node.rightChild.GetCenter();
-
-                float leftDistance = Vector3.Distance(leftVec,obj.transform.position);
-                float rightDistance = Vector3.Distance(rightVec,obj.transform.position);
+                
+                float leftDistance =  CalculateBoxDistance(node.leftChild,obj.transform.position);
+                float rightDistance = CalculateBoxDistance(node.rightChild,obj.transform.position);
 
                 if(leftDistance <= rightDistance) queue.Enqueue(node.leftChild);
                 else queue.Enqueue(node.rightChild);
@@ -166,6 +164,19 @@ public class BVH
         }
 
         Debug.DrawLine(resultNode.corners[0,0],obj.transform.position,Color.yellow,1);
+    }
+
+    public float CalculateBoxDistance(TreeNode box, Vector3 point)
+    {
+        Vector3 boxCenter = box.GetCenter();
+
+        float totalDistance = Vector3.Distance(boxCenter,point);
+
+        float dx = Mathf.Max((float)box.x.min - point.x, 0, point.x - (float)box.x.max);
+        float dy = Mathf.Max((float)box.y.min - point.y, 0, point.y - (float)box.y.max);
+        float dz = Mathf.Max((float)box.z.min - point.z, 0, point.z - (float)box.z.max);
+
+        return Mathf.Sqrt(dx*dx + dy*dy + dz*dz);
     }
 
 }
